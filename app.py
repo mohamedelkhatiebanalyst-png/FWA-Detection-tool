@@ -325,7 +325,14 @@ if uploaded_file is not None:
     # SECTION 3 — DATA PREVIEW
     # -----------------------------------------------------------------------
     st.subheader("3. Data Preview")
-    st.dataframe(df_raw.head(10), use_container_width=True)
+    _PRIVACY_COLS = {"insured name", "insured_name", "member name", "member_name",
+                     "employee name", "employee_name", "name", "full name", "full_name",
+                     "beneficiary name", "beneficiary_name"}
+    _preview_df = df_raw.drop(
+        columns=[c for c in df_raw.columns if c.strip().lower() in _PRIVACY_COLS],
+        errors="ignore",
+    )
+    st.dataframe(_preview_df.head(10), use_container_width=True)
     p1, p2, p3 = st.columns(3)
     p1.caption(f"Total claims: **{len(df):,}**")
     p2.caption(f"Unique members: **{df['member_id'].nunique():,}**")
