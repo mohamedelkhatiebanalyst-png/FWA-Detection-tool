@@ -1,0 +1,35 @@
+# Virtual environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Data files (may contain sensitive PII)
+data/
+*.xlsx
+*.csv
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp / lock files
+~$*
+
+# Claude Code session files
+.claude/
+
+# Pip install artifacts
+=*
