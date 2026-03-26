@@ -65,6 +65,7 @@ EXPORT_COLUMNS = {
 RISK_COLORS = {"High": "FFC7CE", "Medium": "FFEB9C", "Low": "C6EFCE"}
 
 
+@st.cache_data(show_spinner=False)
 def _to_excel(df: pd.DataFrame) -> bytes:
     renamed = df.rename(columns={k: v for k, v in EXPORT_COLUMNS.items() if k in df.columns})
     buf = io.BytesIO()
@@ -109,6 +110,13 @@ def _to_excel(df: pd.DataFrame) -> bytes:
 st.title("📥 Export Results")
 st.divider()
 
+try:
+    suspicious_excel = _to_excel(df_result[df_result["is_suspicious"]].reset_index(drop=True))
+    full_excel       = _to_excel(df_result.reset_index(drop=True))
+except Exception as e:
+    st.error(f"Could not prepare export files: {e}")
+    st.stop()
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -116,7 +124,7 @@ with col1:
     st.caption(f"{suspicious_count:,} members flagged as suspicious.")
     st.download_button(
         label="⬇️ Download Suspicious Members",
-        data=_to_excel(df_result[df_result["is_suspicious"]]),
+        data=suspicious_excel,
         file_name="fwa_suspicious_members.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         use_container_width=True,
@@ -127,7 +135,7 @@ with col2:
     st.caption(f"{len(df_result):,} total members with all scores and flags.")
     st.download_button(
         label="⬇️ Download Full Results",
-        data=_to_excel(df_result),
+        data=full_excel,
         file_name="fwa_all_members.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         use_container_width=True,
